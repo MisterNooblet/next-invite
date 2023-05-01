@@ -56,7 +56,7 @@ const Event = () => {
     if (!attendee) {
       getEvent();
     }
-  }, [aid]);
+  }, [aid, attendee]);
 
   return (
     <>
