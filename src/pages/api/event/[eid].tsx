@@ -41,7 +41,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 event.name,
                 formatDate(event.date.toString()),
                 event.location,
-                `url`
+                `https://next-invite-bay.vercel.app/attendee/${attendee.id}`
               );
             }
           }

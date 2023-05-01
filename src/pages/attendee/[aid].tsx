@@ -39,7 +39,7 @@ const Event = () => {
         },
         body: JSON.stringify(body),
       });
-      //   router.reload();
+      router.push(`/thankyou`);
     } catch (error) {}
   };
 
@@ -48,18 +48,21 @@ const Event = () => {
       try {
         const response = await axios.get<AttendeeExtended>(`/api/attendee/${aid}`);
         setAttendee(response.data);
+        console.log(response.data);
       } catch (error) {
         console.error(error);
       }
     };
-    getEvent();
+    if (!attendee) {
+      getEvent();
+    }
   }, [aid]);
 
   return (
     <>
       <h1>{dtgreeter(attendee?.name)}</h1>
       <h3>
-        Are you comming to {attendee?.eventId.name} at {attendee?.eventId.location}?
+        Are you comming to {attendee?.eventId?.name} at {attendee?.eventId?.location}?
       </h3>
       <form onSubmit={handleSubmit}>
         <label htmlFor="isComing">Yes</label>
