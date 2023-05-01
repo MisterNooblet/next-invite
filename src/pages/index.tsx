@@ -3,10 +3,11 @@ import { Inter } from 'next/font/google';
 import styles from '@/styles/Home.module.css';
 import { IEvent } from './api/models/event';
 import NewEvent from './components/NewEvent';
+import Link from 'next/link';
 
 const inter = Inter({ subsets: ['latin'] });
 
-interface EventResponse extends IEvent {
+export interface EventResponse extends IEvent {
   id: string;
 }
 
@@ -27,6 +28,9 @@ export default function Home({ events }: { events: EventResponse[] }) {
             <p>{event.description}</p>
             <p>{event.date.toString()}</p>
             <p>{event.location}</p>
+            <Link href={`/event/${event.id}`}>
+              <button>Manage Event</button>
+            </Link>
           </div>
         ))}
         <NewEvent />

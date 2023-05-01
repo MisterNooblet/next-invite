@@ -10,42 +10,47 @@ export interface IEvent {
 
 type EventModel = Model<IEvent>;
 
-const eventSchema = new Schema<IEvent>(
-  {
-    name: {
-      type: String,
-      required: true,
-    },
-    description: {
-      type: String,
-      required: false,
-    },
-    date: {
-      type: Date,
-      required: true,
-    },
-    location: {
-      type: String,
-      required: true,
-    },
-    attendees: [{ type: Schema.Types.ObjectId, ref: 'Attendee' }],
-  },
-  {
-    toJSON: {
-      transform(_, ret) {
-        ret.id = ret._id;
-        delete ret._id;
-        delete ret.__v;
-      },
-    },
-    toObject: {
-      transform(_, ret) {
-        ret.id = ret._id;
-        delete ret._id;
-        delete ret.__v;
-      },
-    },
-  }
-);
+let Event = mongoose.models.Event as EventModel;
 
-export default model<IEvent, EventModel>('Event', eventSchema);
+if (!Event) {
+  const eventSchema = new Schema<IEvent>(
+    {
+      name: {
+        type: String,
+        required: true,
+      },
+      description: {
+        type: String,
+        required: false,
+      },
+      date: {
+        type: Date,
+        required: true,
+      },
+      location: {
+        type: String,
+        required: true,
+      },
+      attendees: [{ type: Schema.Types.ObjectId, ref: 'Attendee' }],
+    },
+    {
+      toJSON: {
+        transform(_, ret) {
+          ret.id = ret._id;
+          delete ret._id;
+          delete ret.__v;
+        },
+      },
+      toObject: {
+        transform(_, ret) {
+          ret.id = ret._id;
+          delete ret._id;
+          delete ret.__v;
+        },
+      },
+    }
+  );
+  Event = model<IEvent, EventModel>('Event', eventSchema);
+}
+
+export default Event;

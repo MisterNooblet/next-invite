@@ -7,6 +7,7 @@ const NewEvent = () => {
     event.preventDefault();
     const { title, description, date, location } = event.currentTarget;
     const body = {
+      // @ts-ignore
       name: title.value,
       description: description.value,
       date: date.value,
