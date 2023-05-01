@@ -5,6 +5,7 @@ export interface IAttendee {
   telephone: string;
   isComing: boolean;
   extraGuests: number;
+  eventId: Schema.Types.ObjectId;
 }
 
 type AttendeeModel = Model<IAttendee>;
@@ -29,6 +30,10 @@ if (!Attendee) {
       extraGuests: {
         type: Number,
         default: 0,
+      },
+      eventId: {
+        type: Schema.Types.ObjectId,
+        ref: 'Event',
       },
     },
     {

@@ -3,6 +3,7 @@ import { useRouter } from 'next/router';
 import axios from 'axios';
 import NewAttendee from '../components/NewAttendee';
 import { IAttendee } from '../api/models/attendee';
+import formatDate from '../api/utils/formatDate';
 
 export interface AttendeeExtended extends IAttendee {
   id: string;
@@ -37,7 +38,7 @@ const Event = () => {
     <>
       <h1>{event?.name}</h1>
       <div>{event?.description}</div>
-      <div>{event?.date.toString()}</div>
+      <div>{event && formatDate(event?.date.toString())}</div>
       <div>{event?.location}</div>
       <NewAttendee />
       <table>

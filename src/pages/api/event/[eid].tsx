@@ -2,6 +2,9 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import connectDB from '../utils/connectDB';
 import Event from '../models/event';
 import Attendee from '../models/attendee';
+import sendSMS from '../utils/sendSMS';
+import dtgreeter from 'dtgreeter';
+import formatDate from '../utils/formatDate';
 connectDB();
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void> {
@@ -24,13 +27,23 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         let event;
         if (req.body.attendee) {
           const { name, telephone } = req.body.attendee;
-          const attendee = await Attendee.create({ name: name, telephone: telephone });
+          const attendee = await Attendee.create({ name: name, telephone: telephone, eventId: eid });
           if (attendee) {
             event = await Event.findByIdAndUpdate(
               eid,
               { $push: { attendees: attendee.id } },
               { new: true, runValidators: true }
             );
+            if (event) {
+              await sendSMS(
+                attendee.telephone,
+                dtgreeter(attendee.name),
+                event.name,
+                formatDate(event.date.toString()),
+                event.location,
+                `url`
+              );
+            }
           }
         }
         res.status(201).json(event);

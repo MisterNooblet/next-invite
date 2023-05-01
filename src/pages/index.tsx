@@ -5,6 +5,7 @@ import { IEvent } from './api/models/event';
 import NewEvent from './components/NewEvent';
 import Link from 'next/link';
 import { IAttendee } from './api/models/attendee';
+import formatDate from './api/utils/formatDate';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -27,7 +28,7 @@ export default function Home({ events }: { events: EventResponse[] }) {
           <div key={event.id}>
             <h2>{event.name}</h2>
             <p>{event.description}</p>
-            <p>{event.date.toString()}</p>
+            <p>{formatDate(event.date.toString())}</p>
             <p>{event.location}</p>
             <Link href={`/event/${event.id}`}>
               <button>Manage Event</button>

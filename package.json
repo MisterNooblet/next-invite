@@ -13,12 +13,17 @@
     "@types/react": "18.2.0",
     "@types/react-dom": "18.2.1",
     "axios": "^1.4.0",
+    "dtgreeter": "^1.0.1",
     "eslint": "8.39.0",
     "eslint-config-next": "13.3.2",
     "mongoose": "^7.1.0",
     "next": "13.3.2",
+    "qs": "^6.11.1",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "typescript": "5.0.4"
+  },
+  "devDependencies": {
+    "@types/qs": "^6.9.7"
   }
 }
