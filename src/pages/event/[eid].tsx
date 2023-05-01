@@ -1,16 +1,30 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
-import { EventResponse } from '..';
 import axios from 'axios';
+import NewAttendee from '../components/NewAttendee';
+import { IAttendee } from '../api/models/attendee';
+
+export interface AttendeeExtended extends IAttendee {
+  id: string;
+}
+interface EventExtended {
+  id: string;
+  name: string;
+  description: string;
+  date: Date;
+  location: string;
+  attendees: AttendeeExtended[];
+}
 const Event = () => {
-  const [event, setEvent] = useState<EventResponse | null>(null);
+  const [event, setEvent] = useState<EventExtended | null>(null);
   const router = useRouter();
   const { eid } = router.query;
 
   useEffect(() => {
     const getEvent = async () => {
       try {
-        const response = await axios.get<EventResponse>(`/api/event/${eid}`);
+        const response = await axios.get<EventExtended>(`/api/event/${eid}`);
+        console.log(response.data);
         setEvent(response.data);
       } catch (error) {
         console.error(error);
@@ -25,6 +39,27 @@ const Event = () => {
       <div>{event?.description}</div>
       <div>{event?.date.toString()}</div>
       <div>{event?.location}</div>
+      <NewAttendee />
+      <table>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Telephone</th>
+            <th>Coming</th>
+            <th>Extra Guests</th>
+          </tr>
+        </thead>
+        <tbody>
+          {event?.attendees.map((attendee) => (
+            <tr key={attendee.id}>
+              <td>{attendee.name}</td>
+              <td>{attendee.telephone}</td>
+              <td>{attendee.isComing ? 'Yes' : 'No'}</td>
+              <td>{attendee.extraGuests}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </>
   );
 };

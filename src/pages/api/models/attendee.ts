@@ -24,12 +24,10 @@ if (!Attendee) {
       },
       isComing: {
         type: Boolean,
-        required: true,
         default: false,
       },
       extraGuests: {
         type: Number,
-        required: true,
         default: 0,
       },
     },

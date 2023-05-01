@@ -31,7 +31,7 @@ if (!Event) {
         type: String,
         required: true,
       },
-      attendees: [{ type: Schema.Types.ObjectId, ref: 'Attendee' }],
+      attendees: [{ type: Schema.Types.ObjectId, ref: 'Attendee', default: [] }],
     },
     {
       toJSON: {

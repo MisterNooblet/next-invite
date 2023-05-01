@@ -3,6 +3,7 @@ import { useRouter } from 'next/router';
 
 const NewEvent = () => {
   const router = useRouter();
+
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const { title, description, date, location } = event.currentTarget;

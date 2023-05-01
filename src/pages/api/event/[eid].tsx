@@ -1,6 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import connectDB from '../utils/connectDB';
 import Event from '../models/event';
+import Attendee from '../models/attendee';
 connectDB();
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void> {
@@ -8,7 +9,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   switch (req.method) {
     case 'GET':
       try {
-        const event = await Event.findById(eid);
+        let event = await Event.findById(eid);
+        console.log(event);
+        if (event && event.attendees.length > 0) {
+          event = await Event.findById(eid).populate('attendees');
+        }
         res.status(200).json(event);
       } catch (err) {
         res.status(500).json({ error: err });
@@ -16,10 +21,18 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       break;
     case 'PUT':
       try {
-        const event = await Event.findByIdAndUpdate(eid, req.body, {
-          new: true,
-          runValidators: true,
-        });
+        let event;
+        if (req.body.attendee) {
+          const { name, telephone } = req.body.attendee;
+          const attendee = await Attendee.create({ name: name, telephone: telephone });
+          if (attendee) {
+            event = await Event.findByIdAndUpdate(
+              eid,
+              { $push: { attendees: attendee.id } },
+              { new: true, runValidators: true }
+            );
+          }
+        }
         res.status(201).json(event);
       } catch (err) {
         res.status(500).json({ error: err });

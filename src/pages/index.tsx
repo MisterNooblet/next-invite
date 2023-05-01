@@ -4,6 +4,7 @@ import styles from '@/styles/Home.module.css';
 import { IEvent } from './api/models/event';
 import NewEvent from './components/NewEvent';
 import Link from 'next/link';
+import { IAttendee } from './api/models/attendee';
 
 const inter = Inter({ subsets: ['latin'] });
 
