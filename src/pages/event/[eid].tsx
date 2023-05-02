@@ -51,14 +51,14 @@ const Event = () => {
           </tr>
         </thead>
         <tbody>
-          {/* {event?.attendees.map((attendee) => (
+          {event?.attendees.map((attendee) => (
             <tr key={attendee.id}>
               <td>{attendee.name}</td>
               <td>{attendee.telephone}</td>
               <td>{attendee.isComing ? 'Yes' : 'No'}</td>
               <td>{attendee.extraGuests}</td>
             </tr>
-          ))} */}
+          ))}
         </tbody>
       </table>
     </>

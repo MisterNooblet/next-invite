@@ -35,12 +35,11 @@ import db from './utils/connectMySql';
 export default async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void> {
   switch (req.method) {
     case 'GET':
+      let response;
       try {
         const q = 'SELECT * FROM events';
-        db.query(q, (err, result) => {
-          if (err) throw err;
-          res.status(200).json(result);
-        });
+        const [response] = await (await db).query(q);
+        res.status(200).json(response);
       } catch (err) {
         res.status(500).json({ error: err });
       }
@@ -50,10 +49,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         const { name, description, date, location } = req.body;
         const q = `INSERT INTO events (name, description, date, location, uniqueId) VALUES (?)`;
         const values = [name, description, date, location, Math.random().toString().split('.')[1]];
-        db.query(q, [values], (err, result) => {
-          if (err) throw err;
-          res.status(201).json(result);
-        });
+        const [response] = await (await db).query(q, [values]);
+        res.status(200).json(response);
       } catch (err) {
         res.status(500).json({ error: err });
       }
