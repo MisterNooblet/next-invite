@@ -40,9 +40,10 @@ GROUP BY
   events.location
 `;
         let [fullEvent] = await (await db).query(q2);
-        if (fullEvent.length > 0) {
+        if (Array.isArray(fullEvent) && fullEvent.length > 0) {
           res.status(200).json(fullEvent[0]);
-        } else {
+        } else if (Array.isArray(event) && event.length > 0) {
+          //@ts-ignore
           event[0].attendees = [];
           res.status(200).json(event[0]);
         }
@@ -57,15 +58,21 @@ GROUP BY
         if (req.body.attendee) {
           const { name, telephone } = req.body.attendee;
           const q = `INSERT INTO attendee (name, telephone, isComing, extraGuests, eventId) VALUES (?)`;
+          //@ts-ignore
           const values = [name, telephone, 0, 0, event[0].uniqueId];
           const [response] = await (await db).query(q, [values]);
+          //@ts-ignore
           if (response.warningStatus === 0) {
             await sendSMS(
               telephone,
               dtgreeter(name),
+              //@ts-ignore
               event[0].name,
+              //@ts-ignore
               formatDate(event[0].date.toString()),
+              //@ts-ignore
               event[0].location,
+              //@ts-ignore
               `https://next-invite-bay.vercel.app/attendee/${response.insertId}`
             );
 
