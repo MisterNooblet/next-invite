@@ -37,7 +37,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     case 'GET':
       let response;
       try {
-        console.log('response');
         const q = 'SELECT * FROM events';
         const [response] = await (await db).query(q);
         res.status(200).json(response);
