@@ -1,49 +1,82 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import connectDB from '../utils/connectDB';
-import Event from '../models/event';
-import Attendee from '../models/attendee';
 import sendSMS from '../utils/sendSMS';
 import dtgreeter from 'dtgreeter';
 import formatDate from '../utils/formatDate';
-connectDB();
+import db from '../utils/connectMySql';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void> {
   const { eid } = req.query;
+
   switch (req.method) {
     case 'GET':
       try {
-        let event = await Event.findById(eid);
-        console.log(event);
-        if (event && event.attendees.length > 0) {
-          event = await Event.findById(eid).populate('attendees');
+        const q = `SELECT * FROM events where id = ${eid}`;
+        let [event] = await (await db).query(q);
+        const q2 = `SELECT 
+  events.id, 
+  events.name, 
+  events.description, 
+  events.date, 
+  events.location,
+  JSON_ARRAYAGG(
+    JSON_OBJECT(
+      'id', attendee.id,
+      'name', attendee.name,
+      'telephone', attendee.telephone,
+      'isComing', attendee.isComing,
+      'extraGuests', attendee.extraGuests
+    )
+  ) AS attendees
+FROM 
+  events 
+  JOIN attendee ON events.uniqueId = attendee.eventId 
+WHERE 
+  events.id = ${eid}
+GROUP BY 
+  events.id, 
+  events.name, 
+  events.description, 
+  events.date, 
+  events.location
+`;
+        let [fullEvent] = await (await db).query(q2);
+        if (Array.isArray(fullEvent) && fullEvent.length > 0) {
+          res.status(200).json(fullEvent[0]);
+        } else if (Array.isArray(event) && event.length > 0) {
+          //@ts-ignore
+          event[0].attendees = [];
+          res.status(200).json(event[0]);
         }
-        res.status(200).json(event);
       } catch (err) {
         res.status(500).json({ error: err });
       }
       break;
     case 'PUT':
       try {
-        let event;
+        const q = `SELECT * FROM events where id = ${eid}`;
+        let [event] = await (await db).query(q);
         if (req.body.attendee) {
           const { name, telephone } = req.body.attendee;
-          const attendee = await Attendee.create({ name: name, telephone: telephone, eventId: eid });
-          if (attendee) {
-            event = await Event.findByIdAndUpdate(
-              eid,
-              { $push: { attendees: attendee.id } },
-              { new: true, runValidators: true }
+          const q = `INSERT INTO attendee (name, telephone, isComing, extraGuests, eventId) VALUES (?)`;
+          //@ts-ignore
+          const values = [name, telephone, 0, 0, event[0].uniqueId];
+          const [response] = await (await db).query(q, [values]);
+          //@ts-ignore
+          if (response.warningStatus === 0) {
+            await sendSMS(
+              telephone,
+              dtgreeter(name),
+              //@ts-ignore
+              event[0].name,
+              //@ts-ignore
+              formatDate(event[0].date.toString()),
+              //@ts-ignore
+              event[0].location,
+              //@ts-ignore
+              `https://next-invite-bay.vercel.app/attendee/${response.insertId}`
             );
-            if (event) {
-              await sendSMS(
-                attendee.telephone,
-                dtgreeter(attendee.name),
-                event.name,
-                formatDate(event.date.toString()),
-                event.location,
-                `https://next-invite-bay.vercel.app/attendee/${attendee.id}`
-              );
-            }
+
+            console.log(response);
           }
         }
         res.status(201).json(event);
@@ -52,12 +85,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       }
       break;
     case 'DELETE':
-      try {
-        const event = await Event.findByIdAndDelete(eid);
-        res.status(201).json(event);
-      } catch (err) {
-        res.status(500).json({ error: err });
-      }
+      // try {
+      //   const event = await Event.findByIdAndDelete(eid);
+      //   res.status(201).json(event);
+      // } catch (err) {
+      //   res.status(500).json({ error: err });
+      // }
       break;
     default:
       res.status(405).json({ error: 'Method not supported' });

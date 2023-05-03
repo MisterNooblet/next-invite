@@ -17,6 +17,7 @@
     "eslint": "8.39.0",
     "eslint-config-next": "13.3.2",
     "mongoose": "^7.1.0",
+    "mysql2": "^3.2.4",
     "next": "13.3.2",
     "qs": "^6.11.1",
     "react": "18.2.0",
@@ -24,6 +25,7 @@
     "typescript": "5.0.4"
   },
   "devDependencies": {
+    "@types/mysql": "^2.15.21",
     "@types/qs": "^6.9.7"
   }
 }
