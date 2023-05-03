@@ -1,7 +1,5 @@
 import mysql from 'mysql2/promise';
 
-const environment = process.env.NODE_ENV;
-console.log(environment);
 const db = mysql.createConnection({
   host: process.env.SQL_HOST,
   port: Number(process.env.SQL_PORT),

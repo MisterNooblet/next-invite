@@ -75,8 +75,6 @@ GROUP BY
               //@ts-ignore
               `https://next-invite-bay.vercel.app/attendee/${response.insertId}`
             );
-
-            console.log(response);
           }
         }
         res.status(201).json(event);
