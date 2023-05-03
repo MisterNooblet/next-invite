@@ -25,7 +25,6 @@ const Event = () => {
     const getEvent = async () => {
       try {
         const response = await axios.get<EventExtended>(`/api/event/${eid}`);
-        console.log(response);
         setEvent(response.data);
       } catch (error) {
         console.error(error);

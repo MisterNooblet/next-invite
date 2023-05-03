@@ -1,17 +1,21 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import connectDB from '../utils/connectDB';
-import Event from '../models/event';
-import Attendee from '../models/attendee';
-connectDB();
+import db from '../utils/connectMySql';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void> {
   const { aid } = req.query;
   switch (req.method) {
     case 'GET':
       try {
-        let attendee = await Attendee.findById(aid).populate('eventId');
+        const q = `SELECT * FROM attendee where id = ${aid}`;
+        let [attendee] = await (await db).query(q);
+        //@ts-ignore
+        attendee = attendee[0];
+        //@ts-ignore
+        const q2 = `SELECT * FROM events where uniqueId = ${attendee.eventId}`;
+        let [event] = await (await db).query(q2);
+        //@ts-ignore
+        attendee.event = event[0];
         console.log(attendee);
-
         res.status(200).json(attendee);
       } catch (err) {
         res.status(500).json({ error: err });
@@ -19,12 +23,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       break;
     case 'PUT':
       try {
-        console.log(req.body);
-        const attendee = await Attendee.findByIdAndUpdate(aid, req.body, {
-          new: true,
-          runValidators: true,
-        });
-        res.status(201).json(attendee);
+        const q = `UPDATE attendee SET isComing = ${req.body.isComing}, extraGuests = ${req.body.extraGuests} WHERE id = ${aid}`;
+        let [attendee] = await (await db).query(q);
+        //@ts-ignore
+        res.status(201).json(attendee[0]);
       } catch (err) {
         res.status(500).json({ error: err });
       }

@@ -9,7 +9,7 @@ interface AttendeeExtended {
   telephone: string;
   isComing: boolean;
   extraGuests: number;
-  eventId: {
+  event: {
     id: string;
     name: string;
     description: string;
@@ -28,7 +28,7 @@ const Event = () => {
     const { isComing, extraGuests } = event.currentTarget;
     const body = {
       // @ts-ignore
-      isComing: isComing.checked,
+      isComing: isComing.checked ? 1 : 0,
       extraGuests: extraGuests.value,
     };
     try {
@@ -48,7 +48,6 @@ const Event = () => {
       try {
         const response = await axios.get<AttendeeExtended>(`/api/attendee/${aid}`);
         setAttendee(response.data);
-        console.log(response.data);
       } catch (error) {
         console.error(error);
       }
@@ -62,7 +61,7 @@ const Event = () => {
     <>
       <h1>{dtgreeter(attendee?.name)}</h1>
       <h3>
-        Are you comming to {attendee?.eventId?.name} at {attendee?.eventId?.location}?
+        Are you comming to {attendee?.event?.name} at {attendee?.event?.location}?
       </h3>
       <form onSubmit={handleSubmit}>
         <label htmlFor="isComing">Yes</label>
